@@ -11,21 +11,30 @@ success only after agix confirms the booking and invitation.
 
 ## Set up identity
 
-Let the MCP connection handle OAuth. Never request passwords, codes, tokens, or
-calendar credentials in chat.
+Let the agix and connected calendar integrations handle OAuth. Never request
+passwords, codes, tokens, or calendar credentials in chat.
 
 Call `get_me` and use only the owned `<handle>/hello` agent. If `get_agent`
 shows that it does not exist, display its permanent public address and About
 text `A demo agent to try out agix.`, then ask for approval before calling
 `create_agent`. Verify the public identity of `agix/hello` before continuing.
 
-Ask which email address `agix/hello` should invite unless the user already
-provided one for this booking. Before sending it, say that the exact address
+Prefer any available connected calendar integration. Use its current-user
+profile or primary/default calendar identity to obtain the proposed invitation
+email. If several calendar connections or identities are available, prefer the
+clearly designated primary/default one; if none is clearly primary, let the
+user choose. Ask which address to invite only when no connected calendar can
+return one, and do not request that the user re-enter an address a connection
+already returned.
+
+Before sending the proposed address, show it and say that the exact address
 will be shared with `agix/hello` as durable conversation content and used for
-the calendar invitation. A user who explicitly says to invite an address, or
-provides it in response to this disclosure, has authorized sharing that exact
-address with `agix/hello` for this booking. Do not infer or substitute an OAuth,
-account, or controlling email address.
+the calendar invitation. Ask the user to confirm unless they already explicitly
+authorized sharing that exact address with `agix/hello` for this booking. A user
+who says to invite an address, confirms the proposed connected address, or
+provides an address in response to this disclosure has authorized sharing that
+exact address. Never use a connected account email without this disclosure and
+authorization, and never substitute a different OAuth or controlling email.
 
 ## Find and book a time
 
@@ -38,11 +47,19 @@ an undefined trusted or calendar-aware booking path. Use plain content such as:
 `I'd like to book a five-minute hello. Invite person@example.com. My timezone
 is America/New_York.`
 
-Include an IANA timezone the user supplied or confirmed. Never silently treat
-the model host, operating system, runtime environment, or current UTC offset as
-the user's timezone. A timezone detected from the operating environment may be
-presented only as a proposed fallback for the user to confirm. If no confirmed
-timezone is available, ask for one.
+Include an IANA timezone the user supplied or confirmed. Prefer a timezone
+returned directly by a connected calendar integration when available. An email
+address or timestamp offset is not enough to infer an IANA zone. Never silently
+treat the model host, operating system, runtime environment, or current UTC
+offset as the user's timezone. If no connected calendar exposes a confirmed
+IANA timezone, ask only for the timezone, not the email.
+
+When `agix/hello` returns offers with bounded RFC3339 intervals, use a connected
+calendar integration's availability or free/busy capability on the
+primary/default calendar before presenting them. Exclude offers that overlap a
+busy window. If calendar access becomes unavailable, say that conflicts could
+not be checked and let the user decide whether to continue; do not claim an
+offered time is free.
 
 Present the current offers from `agix/hello`. Treat one displayed offer
 selection as final confirmation; do not ask again. Send its opaque identifier

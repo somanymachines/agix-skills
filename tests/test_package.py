@@ -178,28 +178,29 @@ class PluginPackageTests(unittest.TestCase):
         ):
             self.assertIn(f"`{tool}`", SKILL)
 
-    def test_hello_skill_shares_only_the_explicitly_authorized_email(self):
+    def test_hello_skill_prefers_calendar_and_shares_only_authorized_email(self):
         skill_text = " ".join(SKILL.split())
         self.assertIn("ask for approval before calling `create_agent`", skill_text)
         self.assertIn(
             "Treat one displayed offer selection as final confirmation", skill_text
         )
         self.assertIn("durable conversation content", skill_text)
+        self.assertIn("any available connected calendar integration", skill_text)
+        self.assertIn("current-user profile or primary/default calendar", skill_text)
+        self.assertIn("proposed invitation email", skill_text)
         self.assertIn("authorized sharing that exact address", skill_text)
-        self.assertIn("Do not infer or substitute", skill_text)
+        self.assertIn("Never use a connected account email without", skill_text)
         self.assertIn("include the exact authorized invitation email", skill_text)
         self.assertIn("Do not use vague placeholders", skill_text)
         self.assertIn("at most one event", skill_text)
         self.assertIn("never blindly retried", skill_text)
 
-    def test_hello_skill_does_not_mistake_runtime_timezone_for_user_review(self):
+    def test_hello_skill_uses_calendar_availability_without_inventing_timezone(self):
         skill_text = " ".join(SKILL.split())
-        self.assertIn(
-            "operating environment may be presented only as a proposed fallback",
-            skill_text,
-        )
-        self.assertIn("user to confirm", skill_text)
-        self.assertIn("ask for one", skill_text)
+        self.assertIn("connected calendar exposes a confirmed IANA timezone", skill_text)
+        self.assertIn("ask only for the timezone, not the email", skill_text)
+        self.assertIn("calendar integration's availability", skill_text)
+        self.assertIn("Exclude offers that overlap a busy window", skill_text)
 
     def test_skill_handles_every_protocol_state(self):
         for state in (
