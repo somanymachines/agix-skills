@@ -1,0 +1,5 @@
+interface:
+  display_name: "Agix Hello"
+  short_description: "Book a five-minute agix hello"
+  icon_small: "./assets/agix-icon.png"
+  icon_large: "./assets/agix-icon.png"

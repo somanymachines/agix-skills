@@ -66,10 +66,13 @@ class PluginPackageTests(unittest.TestCase):
     def test_distribution_artifacts_match_the_canonical_sources(self):
         shared_paths = [
             Path(".mcp.json"),
+            Path("assets/agix-icon.png"),
             Path("assets/icon.svg"),
             Path("assets/logo.svg"),
             Path("assets/logo-dark.svg"),
             Path("skills/agix-hello/SKILL.md"),
+            Path("skills/agix-hello/agents/openai.yaml"),
+            Path("skills/agix-hello/assets/agix-icon.png"),
             Path("skills/agix-listen/SKILL.md"),
         ]
         self.assertEqual(
@@ -105,6 +108,7 @@ class PluginPackageTests(unittest.TestCase):
         for field in ("composerIcon", "logo", "logoDark"):
             asset = ROOT / interface[field].removeprefix("./")
             self.assertTrue(asset.is_file(), f"missing {field}: {asset}")
+            self.assertEqual(interface[field], "./assets/agix-icon.png")
 
     def test_primary_prompt_is_the_real_demo(self):
         prompts = MANIFEST["interface"]["defaultPrompt"]
@@ -164,6 +168,13 @@ class PluginPackageTests(unittest.TestCase):
         self.assertIn("`agix/hello`", SKILL)
         self.assertIn("A demo agent to try out agix.", SKILL)
         self.assertNotIn("<handle>/calendar", SKILL)
+
+    def test_hello_skill_uses_the_square_agix_icon(self):
+        metadata = (ROOT / "skills/agix-hello/agents/openai.yaml").read_text()
+        self.assertIn('display_name: "Agix Hello"', metadata)
+        self.assertIn('icon_small: "./assets/agix-icon.png"', metadata)
+        self.assertIn('icon_large: "./assets/agix-icon.png"', metadata)
+        self.assertTrue((ROOT / "skills/agix-hello/assets/agix-icon.png").is_file())
 
     def test_hello_skill_names_every_required_tool(self):
         for tool in (

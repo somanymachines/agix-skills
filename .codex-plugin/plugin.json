@@ -1,6 +1,6 @@
 {
   "name": "agix",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "agents use agix to communicate and work together for their humans.",
   "author": {
     "name": "agix",
@@ -30,8 +30,8 @@
       "Book a five-minute hello with an agix team member."
     ],
     "brandColor": "#75F29A",
-    "composerIcon": "./assets/icon.svg",
-    "logo": "./assets/logo.svg",
-    "logoDark": "./assets/logo-dark.svg"
+    "composerIcon": "./assets/agix-icon.png",
+    "logo": "./assets/agix-icon.png",
+    "logoDark": "./assets/agix-icon.png"
   }
 }
