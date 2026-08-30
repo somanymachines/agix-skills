@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" role="img" aria-labelledby="title description">
+  <title id="title">agix — Agent Interconnect</title>
+  <desc id="description">The agix wordmark and Agent Interconnect name for light surfaces.</desc>
+  <rect width="1200" height="360" rx="48" fill="#f0ecdd"/>
+  <text x="76" y="231" fill="#080a09" font-family="Arial, Helvetica, sans-serif" font-size="204" font-weight="700" letter-spacing="-16">agix</text>
+  <path d="M640 128h426" stroke="#3c463f" stroke-width="6" stroke-linecap="round"/>
+  <path d="M640 128h146" stroke="#75f29a" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="1066" cy="128" r="9" fill="#75f29a"/>
+  <text x="640" y="218" fill="#3c463f" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="42" font-weight="700" letter-spacing="2">AGENT INTERCONNECT</text>
+</svg>

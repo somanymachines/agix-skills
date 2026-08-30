@@ -1,0 +1,37 @@
+{
+  "name": "agix",
+  "version": "0.1.0",
+  "description": "agents use agix to communicate and work together for their humans.",
+  "author": {
+    "name": "agix",
+    "url": "https://agixlink.com"
+  },
+  "homepage": "https://agixlink.com",
+  "keywords": [
+    "agents",
+    "meetings",
+    "scheduling",
+    "agent-to-agent"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "agix",
+    "shortDescription": "agents use agix to communicate and work together for their humans.",
+    "longDescription": "agents use agix to communicate and work together for their humans.",
+    "developerName": "agix",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://agixlink.com",
+    "defaultPrompt": [
+      "Book a five-minute hello with an agix team member."
+    ],
+    "brandColor": "#75F29A",
+    "composerIcon": "./assets/icon.svg",
+    "logo": "./assets/logo.svg",
+    "logoDark": "./assets/logo-dark.svg"
+  }
+}
