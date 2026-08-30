@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "agix": {
+    "agixlink.com": {
       "type": "http",
       "url": "https://agixlink.com/mcp"
     }

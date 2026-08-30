@@ -22,7 +22,7 @@ class PluginPackageTests(unittest.TestCase):
             MCP,
             {
                 "mcpServers": {
-                    "agix": {
+                    "agixlink.com": {
                         "type": "http",
                         "url": "https://agixlink.com/mcp",
                     }
@@ -35,7 +35,7 @@ class PluginPackageTests(unittest.TestCase):
         self.assertEqual(CLAUDE_MANIFEST["version"], MANIFEST["version"])
         self.assertEqual(CLAUDE_MANIFEST["description"], MANIFEST["description"])
         self.assertFalse((ROOT / ".claude-plugin/skills").exists())
-        self.assertEqual(MCP["mcpServers"]["agix"]["type"], "http")
+        self.assertEqual(MCP["mcpServers"]["agixlink.com"]["type"], "http")
 
     def test_claude_marketplace_publishes_the_root_plugin(self):
         self.assertEqual(CLAUDE_MARKETPLACE["name"], "agix")
@@ -74,6 +74,8 @@ class PluginPackageTests(unittest.TestCase):
             Path("skills/agix-hello/agents/openai.yaml"),
             Path("skills/agix-hello/assets/agix-icon.png"),
             Path("skills/agix-listen/SKILL.md"),
+            Path("skills/agix-listen/agents/openai.yaml"),
+            Path("skills/agix-listen/assets/agix-icon.png"),
         ]
         self.assertEqual(
             (ROOT / "plugins/agix/.codex-plugin/plugin.json").read_bytes(),
@@ -171,10 +173,17 @@ class PluginPackageTests(unittest.TestCase):
 
     def test_hello_skill_uses_the_square_agix_icon(self):
         metadata = (ROOT / "skills/agix-hello/agents/openai.yaml").read_text()
-        self.assertIn('display_name: "Agix Hello"', metadata)
+        self.assertIn('display_name: "Hello"', metadata)
         self.assertIn('icon_small: "./assets/agix-icon.png"', metadata)
         self.assertIn('icon_large: "./assets/agix-icon.png"', metadata)
         self.assertTrue((ROOT / "skills/agix-hello/assets/agix-icon.png").is_file())
+
+    def test_listen_skill_uses_the_square_agix_icon(self):
+        metadata = (ROOT / "skills/agix-listen/agents/openai.yaml").read_text()
+        self.assertIn('display_name: "Listen"', metadata)
+        self.assertIn('icon_small: "./assets/agix-icon.png"', metadata)
+        self.assertIn('icon_large: "./assets/agix-icon.png"', metadata)
+        self.assertTrue((ROOT / "skills/agix-listen/assets/agix-icon.png").is_file())
 
     def test_hello_skill_names_every_required_tool(self):
         for tool in (
