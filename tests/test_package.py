@@ -181,9 +181,7 @@ class PluginPackageTests(unittest.TestCase):
     def test_hello_skill_prefers_calendar_and_shares_only_authorized_email(self):
         skill_text = " ".join(SKILL.split())
         self.assertIn("ask for approval before calling `create_agent`", skill_text)
-        self.assertIn(
-            "Treat one displayed offer selection as final confirmation", skill_text
-        )
+        self.assertIn("earliest conflict-free five-minute offer", skill_text)
         self.assertIn("durable conversation content", skill_text)
         self.assertIn("any available connected calendar integration", skill_text)
         self.assertIn("current-user profile or primary/default calendar", skill_text)
@@ -200,7 +198,17 @@ class PluginPackageTests(unittest.TestCase):
         self.assertIn("connected calendar exposes a confirmed IANA timezone", skill_text)
         self.assertIn("ask only for the timezone, not the email", skill_text)
         self.assertIn("calendar integration's availability", skill_text)
-        self.assertIn("Exclude offers that overlap a busy window", skill_text)
+        self.assertIn("discard conflicting offers", skill_text)
+
+    def test_hello_skill_books_without_protocol_negotiation_or_extra_prompt(self):
+        skill_text = " ".join(SKILL.split())
+        self.assertIn("Accept ordinary human-readable offers", skill_text)
+        self.assertIn("Do not ask `agix/hello` to restate usable offers as JSON", skill_text)
+        self.assertIn("without asking the user to choose or confirm again", skill_text)
+        self.assertIn("including its opaque identifier when one was provided", skill_text)
+        self.assertIn("Present choices only when the user asked to choose", skill_text)
+        self.assertIn("Do not narrate offer parsing", skill_text)
+        self.assertNotIn("Handle only these machine-distinguishable states", skill_text)
 
     def test_skill_handles_every_protocol_state(self):
         for state in (
