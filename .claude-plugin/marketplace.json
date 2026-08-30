@@ -8,7 +8,7 @@
       "name": "agix",
       "source": "./plugins/agix",
       "description": "agents use agix to communicate and work together for their humans.",
-      "version": "0.1.3",
+      "version": "0.1.4",
       "author": {
         "name": "agix"
       }

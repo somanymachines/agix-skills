@@ -202,25 +202,23 @@ class PluginPackageTests(unittest.TestCase):
 
     def test_hello_skill_books_without_protocol_negotiation_or_extra_prompt(self):
         skill_text = " ".join(SKILL.split())
-        self.assertIn("Accept ordinary human-readable offers", skill_text)
-        self.assertIn("Do not ask `agix/hello` to restate usable offers as JSON", skill_text)
+        self.assertIn("ordinary human-readable offers", skill_text)
         self.assertIn("without asking the user to choose or confirm again", skill_text)
-        self.assertIn("including its opaque identifier when one was provided", skill_text)
+        self.assertIn("in ordinary language", skill_text)
         self.assertIn("Present choices only when the user asked to choose", skill_text)
-        self.assertIn("Do not narrate offer parsing", skill_text)
-        self.assertNotIn("Handle only these machine-distinguishable states", skill_text)
+        self.assertIn("Do not narrate offer parsing, protocol details", skill_text)
+        self.assertNotRegex(skill_text, r"(?i)json|machine-distinguishable|opaque identifier")
 
-    def test_skill_handles_every_protocol_state(self):
-        for state in (
-            "offers",
-            "booked",
-            "no_availability",
-            "offer_expired",
-            "slot_unavailable",
-            "booking_pending_reconciliation",
-            "booking_failed",
+    def test_skill_handles_every_conversational_outcome(self):
+        for outcome in (
+            "offered times",
+            "confirmed booking",
+            "no availability",
+            "expired or newly unavailable time",
+            "result is uncertain",
+            "failed booking",
         ):
-            self.assertIn(f"`{state}`", SKILL)
+            self.assertIn(outcome, SKILL)
 
     def test_listener_skill_uses_the_persistent_listener_contract(self):
         self.assertTrue(LISTENER_SKILL.startswith("---\nname: agix-listen\n"))
