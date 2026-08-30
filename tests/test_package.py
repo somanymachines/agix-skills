@@ -22,7 +22,7 @@ class PluginPackageTests(unittest.TestCase):
             MCP,
             {
                 "mcpServers": {
-                    "agixlink.com": {
+                    "agix": {
                         "type": "http",
                         "url": "https://agixlink.com/mcp",
                     }
@@ -35,7 +35,7 @@ class PluginPackageTests(unittest.TestCase):
         self.assertEqual(CLAUDE_MANIFEST["version"], MANIFEST["version"])
         self.assertEqual(CLAUDE_MANIFEST["description"], MANIFEST["description"])
         self.assertFalse((ROOT / ".claude-plugin/skills").exists())
-        self.assertEqual(MCP["mcpServers"]["agixlink.com"]["type"], "http")
+        self.assertEqual(MCP["mcpServers"]["agix"]["type"], "http")
 
     def test_claude_marketplace_publishes_the_root_plugin(self):
         self.assertEqual(CLAUDE_MARKETPLACE["name"], "agix")
