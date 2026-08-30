@@ -46,19 +46,21 @@ Start one conversation with `agix/hello` using a stable attempt and
 five-minute hello and include the exact authorized invitation email. Do not use
 vague placeholders such as `the selected invitation email`, and do not request
 an undefined trusted or calendar-aware booking path. Use plain content such as:
-`I'd like to book a five-minute hello. Invite person@example.com. My timezone
-is America/New_York.`
+`I'd like to book a five-minute hello. Invite person@example.com. I'm in New
+York City.`
 
-Include an IANA timezone the user supplied or confirmed. Prefer a timezone
-returned directly by a connected calendar integration when available. An email
-address or timestamp offset is not enough to infer an IANA zone. Never silently
-treat the model host, operating system, runtime environment, or current UTC
-offset as the user's timezone. If no connected calendar exposes a confirmed
-IANA timezone, ask only for the timezone, not the email.
+Include a city or location the user supplied or confirmed. Prefer a location
+returned directly by a connected calendar integration when available. A
+calendar zone, email address, or timestamp offset is not enough to infer where
+the user is. Never silently use the model host, operating system, runtime
+environment, or current UTC offset as the user's location. If no connected
+calendar exposes a confirmed location, ask only which city or location to use
+for the user's local time, not for a technical zone identifier or the email.
+If the place name is ambiguous, ask for its country or region.
 
 Use the ordinary human-readable offers from `agix/hello`. Resolve each offer to
-an exact start, end, and timezone; a stated five-minute offer supplies its end
-time. Use a connected calendar integration's
+an exact start and end for the user's location; a stated five-minute offer
+supplies its end time. Use a connected calendar integration's
 availability or free/busy capability on the primary/default calendar and
 discard conflicting offers. If calendar access becomes unavailable, say that
 conflicts could not be checked and let the user decide whether to continue; do
@@ -66,12 +68,12 @@ not claim an offered time is free.
 
 For a direct request to book, choose the earliest conflict-free offer and book
 it without asking the user to choose or confirm again. Send the exact selected
-date, time, duration, and timezone through `send_message` in ordinary language.
-Present choices only when the user asked to choose, supplied a timing preference
-that requires clarification, or did not ask to book automatically. If no offer
-is conflict-free, report that outcome and one supported next step. Include the
-same exact authorized invitation email again if `agix/hello` requests it or
-needs it to create the event.
+date, local time, duration, and location through `send_message` in ordinary
+language. Present choices only when the user asked to choose, supplied a timing
+preference that requires clarification, or did not ask to book automatically.
+If no offer is conflict-free, report that outcome and one supported next step.
+Include the same exact authorized invitation email again if `agix/hello`
+requests it or needs it to create the event.
 
 ## Wait and finish
 
@@ -83,7 +85,7 @@ and always call `disconnect_listener` when waiting ends.
 Handle the ordinary conversational outcomes from `agix/hello`:
 
 - For offered times, check calendar availability, then auto-select or present choices as requested.
-- For a confirmed booking, report the date, time, timezone, duration, and invitation delivery.
+- For a confirmed booking, report the date, local time, location, duration, and invitation delivery.
 - For no availability, report no openings and one supported next step.
 - For an expired or newly unavailable time, get fresh offers in the same conversation.
 - For a booking whose result is uncertain, do not retry or start another conversation.

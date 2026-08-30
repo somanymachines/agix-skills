@@ -193,10 +193,15 @@ class PluginPackageTests(unittest.TestCase):
         self.assertIn("at most one event", skill_text)
         self.assertIn("never blindly retried", skill_text)
 
-    def test_hello_skill_uses_calendar_availability_without_inventing_timezone(self):
+    def test_hello_skill_uses_calendar_availability_and_human_location(self):
         skill_text = " ".join(SKILL.split())
-        self.assertIn("connected calendar exposes a confirmed IANA timezone", skill_text)
-        self.assertIn("ask only for the timezone, not the email", skill_text)
+        self.assertIn("Include a city or location the user supplied or confirmed", skill_text)
+        self.assertIn("ask only which city or location to use", skill_text)
+        self.assertIn("not for a technical zone identifier or the email", skill_text)
+        self.assertIn("If the place name is ambiguous", skill_text)
+        self.assertIn("I'm in New York City", skill_text)
+        self.assertNotIn("timezone", skill_text.lower())
+        self.assertNotIn("America/New_York", skill_text)
         self.assertIn("calendar integration's availability", skill_text)
         self.assertIn("discard conflicting offers", skill_text)
 
