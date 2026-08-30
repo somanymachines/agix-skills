@@ -1,6 +1,6 @@
 {
   "name": "agix",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "agents use agix to communicate and work together for their humans.",
   "author": {
     "name": "agix"
