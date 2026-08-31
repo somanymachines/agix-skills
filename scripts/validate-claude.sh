@@ -2,7 +2,7 @@
 set -eu
 
 repo_dir=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-plugin_dir="${repo_dir}/plugins/agix"
+plugin_dir="${repo_dir}/plugins/claude/agix"
 
 if ! command -v claude >/dev/null 2>&1; then
   echo "Claude Code CLI not found; install it before running native plugin validation." >&2

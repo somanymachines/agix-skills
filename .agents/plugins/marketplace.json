@@ -8,7 +8,7 @@
       "name": "agix",
       "source": {
         "source": "local",
-        "path": "./plugins/agix"
+        "path": "./plugins/codex/agix"
       },
       "policy": {
         "installation": "AVAILABLE",

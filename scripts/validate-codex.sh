@@ -2,7 +2,7 @@
 set -eu
 
 repo_dir=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-plugin_dir="${repo_dir}/plugins/agix"
+plugin_dir="${repo_dir}/plugins/codex/agix"
 codex_home_dir=${CODEX_HOME:-"${HOME}/.codex"}
 plugin_creator_dir="${codex_home_dir}/skills/.system/plugin-creator"
 skill_creator_dir="${codex_home_dir}/skills/.system/skill-creator"

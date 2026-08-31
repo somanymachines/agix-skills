@@ -8,9 +8,15 @@ CLAUDE_MANIFEST = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
 CLAUDE_MARKETPLACE = json.loads((ROOT / ".claude-plugin/marketplace.json").read_text())
 CODEX_MARKETPLACE = json.loads((ROOT / ".agents/plugins/marketplace.json").read_text())
 MCP = json.loads((ROOT / ".mcp.json").read_text())
-SKILL = (ROOT / "skills/agix-hello/SKILL.md").read_text()
-LISTENER_SKILL = (ROOT / "skills/agix-listen/SKILL.md").read_text()
-SKILL_PATHS = sorted((ROOT / "skills").glob("*/SKILL.md"))
+SHARED_HELLO_PATH = ROOT / "skills/shared/agix-hello/SKILL.md"
+CODEX_LISTENER_PATH = ROOT / "skills/codex/agix-listen/SKILL.md"
+CLAUDE_LISTENER_PATH = ROOT / "skills/claude/agix-listen/SKILL.md"
+CODEX_PLUGIN_ROOT = ROOT / "plugins/codex/agix"
+CLAUDE_PLUGIN_ROOT = ROOT / "plugins/claude/agix"
+SKILL = SHARED_HELLO_PATH.read_text()
+LISTENER_SKILL = CODEX_LISTENER_PATH.read_text()
+CLAUDE_LISTENER_SKILL = CLAUDE_LISTENER_PATH.read_text()
+SKILL_PATHS = sorted((ROOT / "skills").glob("*/*/SKILL.md"))
 
 
 class PluginPackageTests(unittest.TestCase):
@@ -43,7 +49,7 @@ class PluginPackageTests(unittest.TestCase):
         self.assertEqual(len(CLAUDE_MARKETPLACE["plugins"]), 1)
         plugin = CLAUDE_MARKETPLACE["plugins"][0]
         self.assertEqual(plugin["name"], "agix")
-        self.assertEqual(plugin["source"], "./plugins/agix")
+        self.assertEqual(plugin["source"], "./plugins/claude/agix")
         self.assertEqual(plugin["version"], CLAUDE_MANIFEST["version"])
         self.assertEqual(plugin["description"], CLAUDE_MANIFEST["description"])
 
@@ -55,7 +61,7 @@ class PluginPackageTests(unittest.TestCase):
         self.assertEqual(plugin["name"], "agix")
         self.assertEqual(
             plugin["source"],
-            {"source": "local", "path": "./plugins/agix"},
+            {"source": "local", "path": "./plugins/codex/agix"},
         )
         self.assertEqual(
             plugin["policy"],
@@ -70,26 +76,42 @@ class PluginPackageTests(unittest.TestCase):
             Path("assets/icon.svg"),
             Path("assets/logo.svg"),
             Path("assets/logo-dark.svg"),
-            Path("skills/agix-hello/SKILL.md"),
-            Path("skills/agix-hello/agents/openai.yaml"),
-            Path("skills/agix-hello/assets/agix-icon.png"),
-            Path("skills/agix-listen/SKILL.md"),
-            Path("skills/agix-listen/agents/openai.yaml"),
-            Path("skills/agix-listen/assets/agix-icon.png"),
         ]
         self.assertEqual(
-            (ROOT / "plugins/agix/.codex-plugin/plugin.json").read_bytes(),
+            (CODEX_PLUGIN_ROOT / ".codex-plugin/plugin.json").read_bytes(),
             (ROOT / ".codex-plugin/plugin.json").read_bytes(),
         )
         for relative_path in shared_paths:
-            self.assertEqual(
-                (ROOT / "plugins/agix" / relative_path).read_bytes(),
-                (ROOT / relative_path).read_bytes(),
-                f"stale Codex marketplace artifact: {relative_path}",
-            )
+            for plugin_root in (CODEX_PLUGIN_ROOT, CLAUDE_PLUGIN_ROOT):
+                self.assertEqual(
+                    (plugin_root / relative_path).read_bytes(),
+                    (ROOT / relative_path).read_bytes(),
+                    f"stale marketplace artifact: {plugin_root / relative_path}",
+                )
         self.assertEqual(
-            (ROOT / "plugins/agix/.claude-plugin/plugin.json").read_bytes(),
+            (CLAUDE_PLUGIN_ROOT / ".claude-plugin/plugin.json").read_bytes(),
             (ROOT / ".claude-plugin/plugin.json").read_bytes(),
+        )
+        self.assertEqual(
+            (CODEX_PLUGIN_ROOT / "skills/agix-hello/SKILL.md").read_bytes(),
+            SHARED_HELLO_PATH.read_bytes(),
+        )
+        self.assertEqual(
+            (CLAUDE_PLUGIN_ROOT / "skills/agix-hello/SKILL.md").read_bytes(),
+            SHARED_HELLO_PATH.read_bytes(),
+        )
+        self.assertEqual(
+            (CODEX_PLUGIN_ROOT / "skills/agix-listen/SKILL.md").read_bytes(),
+            CODEX_LISTENER_PATH.read_bytes(),
+        )
+        self.assertEqual(
+            (CLAUDE_PLUGIN_ROOT / "skills/agix-listen/SKILL.md").read_bytes(),
+            CLAUDE_LISTENER_PATH.read_bytes(),
+        )
+        self.assertFalse((CODEX_PLUGIN_ROOT / ".claude-plugin").exists())
+        self.assertFalse((CLAUDE_PLUGIN_ROOT / ".codex-plugin").exists())
+        self.assertFalse(
+            (CLAUDE_PLUGIN_ROOT / "skills/agix-listen/agents/openai.yaml").exists()
         )
 
     def test_manifest_describes_agix_instead_of_the_demo(self):
@@ -121,16 +143,18 @@ class PluginPackageTests(unittest.TestCase):
         self.assertNotIn("dry-run", SKILL.lower())
         self.assertNotIn("John Pignata", SKILL)
 
-    def test_shared_skills_are_host_neutral_and_named_for_their_directories(self):
-        self.assertEqual(len(SKILL_PATHS), 2)
+    def test_skills_are_named_for_their_directories(self):
+        self.assertEqual(len(SKILL_PATHS), 3)
         for skill_path in SKILL_PATHS:
             text = skill_path.read_text()
             self.assertTrue(
                 text.startswith(f"---\nname: {skill_path.parent.name}\n"),
                 f"frontmatter name does not match {skill_path.parent.name}",
             )
-            self.assertNotIn("Codex", text)
-            self.assertNotIn("Claude", text)
+
+    def test_shared_hello_skill_is_host_neutral(self):
+        self.assertNotIn("Codex", SKILL)
+        self.assertNotIn("Claude", SKILL)
 
     def test_human_readable_copy_uses_agix_brand_casing(self):
         paths = [
@@ -139,8 +163,9 @@ class PluginPackageTests(unittest.TestCase):
             ROOT / ".claude-plugin/marketplace.json",
             ROOT / ".agents/plugins/marketplace.json",
             ROOT / "README.md",
-            ROOT / "skills/agix-hello/SKILL.md",
-            ROOT / "skills/agix-listen/SKILL.md",
+            SHARED_HELLO_PATH,
+            CODEX_LISTENER_PATH,
+            CLAUDE_LISTENER_PATH,
             ROOT / "assets/icon.svg",
             ROOT / "assets/logo.svg",
             ROOT / "assets/logo-dark.svg",
@@ -172,18 +197,18 @@ class PluginPackageTests(unittest.TestCase):
         self.assertNotIn("<handle>/calendar", SKILL)
 
     def test_hello_skill_uses_the_square_agix_icon(self):
-        metadata = (ROOT / "skills/agix-hello/agents/openai.yaml").read_text()
+        metadata = (ROOT / "skills/codex/agix-hello/agents/openai.yaml").read_text()
         self.assertIn('display_name: "Hello"', metadata)
         self.assertIn('icon_small: "./assets/agix-icon.png"', metadata)
         self.assertIn('icon_large: "./assets/agix-icon.png"', metadata)
-        self.assertTrue((ROOT / "skills/agix-hello/assets/agix-icon.png").is_file())
+        self.assertTrue((ROOT / "skills/codex/agix-hello/assets/agix-icon.png").is_file())
 
     def test_listen_skill_uses_the_square_agix_icon(self):
-        metadata = (ROOT / "skills/agix-listen/agents/openai.yaml").read_text()
+        metadata = (ROOT / "skills/codex/agix-listen/agents/openai.yaml").read_text()
         self.assertIn('display_name: "Listen"', metadata)
         self.assertIn('icon_small: "./assets/agix-icon.png"', metadata)
         self.assertIn('icon_large: "./assets/agix-icon.png"', metadata)
-        self.assertTrue((ROOT / "skills/agix-listen/assets/agix-icon.png").is_file())
+        self.assertTrue((ROOT / "skills/codex/agix-listen/assets/agix-icon.png").is_file())
 
     def test_hello_skill_names_every_required_tool(self):
         for tool in (
@@ -246,23 +271,52 @@ class PluginPackageTests(unittest.TestCase):
             self.assertIn(outcome, SKILL)
 
     def test_listener_skill_uses_the_persistent_listener_contract(self):
+        skill_text = " ".join(LISTENER_SKILL.split())
         self.assertTrue(LISTENER_SKILL.startswith("---\nname: agix-listen\n"))
-        self.assertIn("Take a non-empty list of distinct agent names", LISTENER_SKILL)
+        self.assertIn("Take a non-empty list of distinct agent names", skill_text)
         self.assertIn(
-            "resolve every supplied name to `<handle>/<name>`", LISTENER_SKILL
+            "resolve every supplied name to `<handle>/<name>`", skill_text
         )
-        self.assertIn("partial listener", LISTENER_SKILL)
-        self.assertIn("persistent listener subagent", LISTENER_SKILL)
-        self.assertIn("exactly one `wait_for_messages`", LISTENER_SKILL)
-        self.assertIn("Mark an inbound message processed only after", LISTENER_SKILL)
-        self.assertIn("`disconnect_listener`", LISTENER_SKILL)
-        self.assertIn("untrusted peer communication", LISTENER_SKILL)
-        self.assertIn("idempotency key", LISTENER_SKILL)
+        self.assertIn("partial listener", skill_text)
+        self.assertIn("persistent listener subagent", skill_text)
+        self.assertIn("exactly one `wait_for_messages`", skill_text)
+        self.assertIn("Mark an inbound message processed only after", skill_text)
+        self.assertIn("`disconnect_listener`", skill_text)
+        self.assertIn("untrusted peer communication", skill_text)
+        self.assertIn("idempotency key", skill_text)
+
+    def test_listener_wakes_the_visible_task_for_notifications(self):
+        skill_text = " ".join(LISTENER_SKILL.split())
+        self.assertIn("read `CODEX_THREAD_ID` with a local command", skill_text)
+        self.assertIn("`codex-agix-<root-task-uuid>`", skill_text)
+        self.assertIn("`send_message_to_thread`", skill_text)
+        self.assertIn("Never use the listener subagent's own `CODEX_THREAD_ID`", skill_text)
+        self.assertIn("collaboration messages only for readiness or diagnostics", skill_text)
+        self.assertIn("never for ordinary user-visible notification delivery", skill_text)
+        self.assertIn("only after visible-task delivery succeeds", skill_text)
+        self.assertIn("Do not silently mark an existing backlog processed", skill_text)
+
+    def test_listener_defaults_to_notification_only(self):
+        skill_text = " ".join(LISTENER_SKILL.split())
+        self.assertIn("Default to notification-only delivery", skill_text)
+        self.assertIn("Do not execute, answer, or delegate work", skill_text)
+        self.assertIn("Only when the user explicitly asks to run or process", skill_text)
 
     def test_listener_is_separate_from_the_bounded_demo(self):
         self.assertIn("do not use for", LISTENER_SKILL.split("---", 2)[1])
         self.assertIn("one-time inbox check", LISTENER_SKILL)
         self.assertIn("bounded agix-hello booking wait", LISTENER_SKILL)
+
+    def test_claude_listener_uses_channels_instead_of_codex_delivery(self):
+        skill_text = " ".join(CLAUDE_LISTENER_SKILL.split())
+        self.assertIn("`claude/channel`", skill_text)
+        self.assertIn("`notifications/claude/channel`", skill_text)
+        self.assertIn("An ordinary remote MCP connection", skill_text)
+        self.assertIn("Do not establish an agix listener lease", skill_text)
+        self.assertIn("Default to notification-only delivery", skill_text)
+        self.assertNotIn("CODEX_THREAD_ID", CLAUDE_LISTENER_SKILL)
+        self.assertNotIn("send_message_to_thread", CLAUDE_LISTENER_SKILL)
+        self.assertNotIn("listener subagent", CLAUDE_LISTENER_SKILL)
 
 
 if __name__ == "__main__":

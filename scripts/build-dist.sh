@@ -9,20 +9,34 @@ cleanup() {
 }
 trap cleanup EXIT HUP INT TERM
 
-plugin_build="${build_dir}/agix"
-mkdir -p "${plugin_build}"
+codex_build="${build_dir}/codex/agix"
+claude_build="${build_dir}/claude/agix"
+mkdir -p "${codex_build}/skills" "${claude_build}/skills"
 
-cp "${repo_dir}/.mcp.json" "${plugin_build}/.mcp.json"
-cp -R "${repo_dir}/skills" "${plugin_build}/skills"
-cp -R "${repo_dir}/assets" "${plugin_build}/assets"
+for plugin_build in "${codex_build}" "${claude_build}"; do
+  cp "${repo_dir}/.mcp.json" "${plugin_build}/.mcp.json"
+  cp -R "${repo_dir}/assets" "${plugin_build}/assets"
+  cp -R "${repo_dir}/skills/shared/agix-hello" \
+    "${plugin_build}/skills/agix-hello"
+done
 
-cp -R "${repo_dir}/.codex-plugin" "${plugin_build}/.codex-plugin"
-mkdir -p "${plugin_build}/.claude-plugin"
+cp -R "${repo_dir}/skills/codex/agix-hello/." \
+  "${codex_build}/skills/agix-hello/"
+cp -R "${repo_dir}/skills/codex/agix-listen" \
+  "${codex_build}/skills/agix-listen"
+cp -R "${repo_dir}/.codex-plugin" "${codex_build}/.codex-plugin"
+
+cp -R "${repo_dir}/skills/claude/agix-listen" \
+  "${claude_build}/skills/agix-listen"
+mkdir -p "${claude_build}/.claude-plugin"
 cp "${repo_dir}/.claude-plugin/plugin.json" \
-  "${plugin_build}/.claude-plugin/plugin.json"
+  "${claude_build}/.claude-plugin/plugin.json"
 
-rm -rf -- "${repo_dir}/plugins/agix"
+rm -rf -- "${repo_dir}/plugins/agix" "${repo_dir}/plugins/codex" \
+  "${repo_dir}/plugins/claude"
 mkdir -p "${repo_dir}/plugins"
-mv "${plugin_build}" "${repo_dir}/plugins/agix"
+mv "${build_dir}/codex" "${repo_dir}/plugins/codex"
+mv "${build_dir}/claude" "${repo_dir}/plugins/claude"
 
-echo "Built ${repo_dir}/plugins/agix"
+echo "Built ${repo_dir}/plugins/codex/agix"
+echo "Built ${repo_dir}/plugins/claude/agix"
