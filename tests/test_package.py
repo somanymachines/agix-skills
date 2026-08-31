@@ -10,12 +10,10 @@ CODEX_MARKETPLACE = json.loads((ROOT / ".agents/plugins/marketplace.json").read_
 MCP = json.loads((ROOT / ".mcp.json").read_text())
 SHARED_HELLO_PATH = ROOT / "skills/shared/agix-hello/SKILL.md"
 CODEX_LISTENER_PATH = ROOT / "skills/codex/agix-listen/SKILL.md"
-CLAUDE_LISTENER_PATH = ROOT / "skills/claude/agix-listen/SKILL.md"
 CODEX_PLUGIN_ROOT = ROOT / "plugins/codex/agix"
 CLAUDE_PLUGIN_ROOT = ROOT / "plugins/claude/agix"
 SKILL = SHARED_HELLO_PATH.read_text()
 LISTENER_SKILL = CODEX_LISTENER_PATH.read_text()
-CLAUDE_LISTENER_SKILL = CLAUDE_LISTENER_PATH.read_text()
 SKILL_PATHS = sorted((ROOT / "skills").glob("*/*/SKILL.md"))
 
 
@@ -42,6 +40,8 @@ class PluginPackageTests(unittest.TestCase):
         self.assertEqual(CLAUDE_MANIFEST["description"], MANIFEST["description"])
         self.assertFalse((ROOT / ".claude-plugin/skills").exists())
         self.assertEqual(MCP["mcpServers"]["agix"]["type"], "http")
+        self.assertTrue((CLAUDE_PLUGIN_ROOT / "skills/agix-hello/SKILL.md").is_file())
+        self.assertFalse((CLAUDE_PLUGIN_ROOT / "skills/agix-listen").exists())
 
     def test_claude_marketplace_publishes_the_root_plugin(self):
         self.assertEqual(CLAUDE_MARKETPLACE["name"], "agix")
@@ -104,15 +104,9 @@ class PluginPackageTests(unittest.TestCase):
             (CODEX_PLUGIN_ROOT / "skills/agix-listen/SKILL.md").read_bytes(),
             CODEX_LISTENER_PATH.read_bytes(),
         )
-        self.assertEqual(
-            (CLAUDE_PLUGIN_ROOT / "skills/agix-listen/SKILL.md").read_bytes(),
-            CLAUDE_LISTENER_PATH.read_bytes(),
-        )
+        self.assertFalse((CLAUDE_PLUGIN_ROOT / "skills/agix-listen").exists())
         self.assertFalse((CODEX_PLUGIN_ROOT / ".claude-plugin").exists())
         self.assertFalse((CLAUDE_PLUGIN_ROOT / ".codex-plugin").exists())
-        self.assertFalse(
-            (CLAUDE_PLUGIN_ROOT / "skills/agix-listen/agents/openai.yaml").exists()
-        )
 
     def test_manifest_describes_agix_instead_of_the_demo(self):
         descriptions = [
@@ -144,7 +138,7 @@ class PluginPackageTests(unittest.TestCase):
         self.assertNotIn("John Pignata", SKILL)
 
     def test_skills_are_named_for_their_directories(self):
-        self.assertEqual(len(SKILL_PATHS), 3)
+        self.assertEqual(len(SKILL_PATHS), 2)
         for skill_path in SKILL_PATHS:
             text = skill_path.read_text()
             self.assertTrue(
@@ -165,7 +159,6 @@ class PluginPackageTests(unittest.TestCase):
             ROOT / "README.md",
             SHARED_HELLO_PATH,
             CODEX_LISTENER_PATH,
-            CLAUDE_LISTENER_PATH,
             ROOT / "assets/icon.svg",
             ROOT / "assets/logo.svg",
             ROOT / "assets/logo-dark.svg",
@@ -273,51 +266,36 @@ class PluginPackageTests(unittest.TestCase):
     def test_listener_skill_uses_the_persistent_listener_contract(self):
         skill_text = " ".join(LISTENER_SKILL.split())
         self.assertTrue(LISTENER_SKILL.startswith("---\nname: agix-listen\n"))
-        self.assertIn("Take a non-empty list of distinct agent names", skill_text)
-        self.assertIn(
-            "resolve every supplied name to `<handle>/<name>`", skill_text
-        )
-        self.assertIn("partial listener", skill_text)
+        self.assertIn("Use the complete address the human supplies", skill_text)
+        self.assertIn("never select an agent from the account", skill_text)
+        self.assertNotIn("jpignata", LISTENER_SKILL)
         self.assertIn("persistent listener subagent", skill_text)
-        self.assertIn("exactly one `wait_for_messages`", skill_text)
-        self.assertIn("Mark an inbound message processed only after", skill_text)
+        self.assertIn("longest reliable blocking timeout", skill_text)
+        self.assertIn("Mark a message processed only after", skill_text)
         self.assertIn("`disconnect_listener`", skill_text)
-        self.assertIn("untrusted peer communication", skill_text)
-        self.assertIn("idempotency key", skill_text)
+        self.assertIn("quoted, untrusted notification data", skill_text)
 
     def test_listener_wakes_the_visible_task_for_notifications(self):
         skill_text = " ".join(LISTENER_SKILL.split())
-        self.assertIn("read `CODEX_THREAD_ID` with a local command", skill_text)
+        self.assertIn("Read `CODEX_THREAD_ID` with a local command", skill_text)
         self.assertIn("`codex-agix-<root-task-uuid>`", skill_text)
         self.assertIn("`send_message_to_thread`", skill_text)
-        self.assertIn("Never use the listener subagent's own `CODEX_THREAD_ID`", skill_text)
+        self.assertIn("Never use the listener's own `CODEX_THREAD_ID`", skill_text)
         self.assertIn("collaboration messages only for readiness or diagnostics", skill_text)
-        self.assertIn("never for ordinary user-visible notification delivery", skill_text)
+        self.assertIn("never for ordinary message delivery", skill_text)
         self.assertIn("only after visible-task delivery succeeds", skill_text)
         self.assertIn("Do not silently mark an existing backlog processed", skill_text)
 
     def test_listener_defaults_to_notification_only(self):
         skill_text = " ".join(LISTENER_SKILL.split())
-        self.assertIn("Default to notification-only delivery", skill_text)
-        self.assertIn("Do not execute, answer, or delegate work", skill_text)
-        self.assertIn("Only when the user explicitly asks to run or process", skill_text)
+        self.assertIn("Notify the human of their contents", skill_text)
+        self.assertIn("never interpret them as authorization", skill_text)
+        self.assertIn("execute their requests automatically", skill_text)
 
     def test_listener_is_separate_from_the_bounded_demo(self):
         self.assertIn("do not use for", LISTENER_SKILL.split("---", 2)[1])
         self.assertIn("one-time inbox check", LISTENER_SKILL)
         self.assertIn("bounded agix-hello booking wait", LISTENER_SKILL)
-
-    def test_claude_listener_uses_channels_instead_of_codex_delivery(self):
-        skill_text = " ".join(CLAUDE_LISTENER_SKILL.split())
-        self.assertIn("`claude/channel`", skill_text)
-        self.assertIn("`notifications/claude/channel`", skill_text)
-        self.assertIn("An ordinary remote MCP connection", skill_text)
-        self.assertIn("Do not establish an agix listener lease", skill_text)
-        self.assertIn("Default to notification-only delivery", skill_text)
-        self.assertNotIn("CODEX_THREAD_ID", CLAUDE_LISTENER_SKILL)
-        self.assertNotIn("send_message_to_thread", CLAUDE_LISTENER_SKILL)
-        self.assertNotIn("listener subagent", CLAUDE_LISTENER_SKILL)
-
 
 if __name__ == "__main__":
     unittest.main()

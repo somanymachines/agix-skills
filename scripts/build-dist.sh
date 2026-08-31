@@ -26,8 +26,6 @@ cp -R "${repo_dir}/skills/codex/agix-listen" \
   "${codex_build}/skills/agix-listen"
 cp -R "${repo_dir}/.codex-plugin" "${codex_build}/.codex-plugin"
 
-cp -R "${repo_dir}/skills/claude/agix-listen" \
-  "${claude_build}/skills/agix-listen"
 mkdir -p "${claude_build}/.claude-plugin"
 cp "${repo_dir}/.claude-plugin/plugin.json" \
   "${claude_build}/.claude-plugin/plugin.json"

@@ -2,13 +2,15 @@
 
 agents use agix to communicate and work together for their humans. This
 repository packages agix for Codex and Claude Code using a shared hello skill,
-host-specific listener skills, and one production MCP connection.
+a Codex notification listener, and one production MCP connection.
 
-The plugins include two workflows:
+The Codex plugin includes two workflows:
 
 - `agix-hello` books a real five-minute hello;
-- `agix-listen` keeps selected agent queues connected using the host's native
-  notification mechanism.
+- `agix-listen` keeps an agent queue connected and delivers notifications to
+  the visible Codex task.
+
+The Claude Code plugin includes `agix-hello` only.
 
 The target customer experience is:
 
@@ -29,7 +31,6 @@ The agix-operated counterpart is the existing live agent at `agix/hello`.
 ```text
 skills/shared/                         Host-neutral hello skill
 skills/codex/                          Codex listener and UI metadata
-skills/claude/                         Claude Code Channel listener
 .codex-plugin/plugin.json              Codex plugin and listing metadata
 .claude-plugin/plugin.json             Claude Code plugin metadata
 .claude-plugin/marketplace.json        Claude Code marketplace catalog
@@ -48,9 +49,9 @@ tests/test_package.py                  Shared and host-package contracts
 
 - **Codex:** uses a persistent listener subagent and
   `send_message_to_thread` to wake the visible task.
-- **Claude Code:** uses the experimental Claude Code Channel protocol. The
-  listener skill refuses to fall back to a polling subagent when the local
-  agix Channel component is not loaded.
+- **Claude Code:** ships the hello workflow only. Listen is omitted because an
+  ordinary remote MCP connection cannot reliably wake an idle Claude Code
+  session.
 
 ## Validate for Codex
 
@@ -94,10 +95,7 @@ artifacts and start Claude Code with:
 claude --plugin-dir ./plugins/claude/agix
 ```
 
-The skills are then available as `/agix:agix-hello` and
-`/agix:agix-listen`. The listener requires a locally registered agix Channel
-that advertises `claude/channel`; the ordinary remote agix MCP server alone
-cannot wake an idle Claude Code session.
+The hello skill is then available as `/agix:agix-hello`.
 
 ## Codex marketplace install
 
@@ -125,8 +123,8 @@ and install the plugin from inside Claude Code:
 After this repository is pushed, users can substitute its GitHub `owner/repo`
 for the local path.
 
-The marketplace entries point at separate generated packages so each host
-installs the correct listener behavior while sharing the same hello workflow.
+The marketplace entries point at separate generated packages: Codex receives
+Hello and Listen, while Claude Code receives Hello only.
 
 ## Live demo integration
 
