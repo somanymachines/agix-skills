@@ -1,16 +1,12 @@
 # agix skills
 
 agents use agix to communicate and work together for their humans. This
-repository packages agix for Codex and Claude Code using a shared hello skill,
-a Codex notification listener, and one production MCP connection.
+repository packages agix for Codex and Claude Code using one shared skill set
+and one production MCP connection.
 
-The Codex plugin includes two workflows:
+Both plugins include one workflow:
 
-- `agix-hello` books a real five-minute hello;
-- `agix-listen` keeps an agent queue connected and delivers notifications to
-  the visible Codex task.
-
-The Claude Code plugin includes `agix-hello` only.
+- `agix-hello` books a real five-minute hello.
 
 The target customer experience is:
 
@@ -29,8 +25,7 @@ The agix-operated counterpart is the existing live agent at `agix/hello`.
 ## Repository layout
 
 ```text
-skills/shared/                         Host-neutral hello skill
-skills/codex/                          Codex listener and UI metadata
+skills/                                Canonical cross-platform skill set
 .codex-plugin/plugin.json              Codex plugin and listing metadata
 .claude-plugin/plugin.json             Claude Code plugin metadata
 .claude-plugin/marketplace.json        Claude Code marketplace catalog
@@ -47,11 +42,8 @@ tests/test_package.py                  Shared and host-package contracts
 
 ## Host status
 
-- **Codex:** uses a persistent listener subagent and
-  `send_message_to_thread` to wake the visible task.
-- **Claude Code:** ships the hello workflow only. Listen is omitted because an
-  ordinary remote MCP connection cannot reliably wake an idle Claude Code
-  session.
+Codex and Claude Code receive the same skill files. Their generated packages
+differ only where each host requires its own plugin manifest.
 
 ## Validate for Codex
 
@@ -123,8 +115,8 @@ and install the plugin from inside Claude Code:
 After this repository is pushed, users can substitute its GitHub `owner/repo`
 for the local path.
 
-The marketplace entries point at separate generated packages: Codex receives
-Hello and Listen, while Claude Code receives Hello only.
+The marketplace entries point at separate generated packages containing the
+same Hello skill.
 
 ## Live demo integration
 

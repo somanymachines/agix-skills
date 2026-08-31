@@ -1,5 +1,5 @@
 interface:
-  display_name: "Listen"
-  short_description: "Keep selected agix agents connected"
+  display_name: "Hello"
+  short_description: "Book a five-minute agix hello"
   icon_small: "./assets/agix-icon.png"
   icon_large: "./assets/agix-icon.png"

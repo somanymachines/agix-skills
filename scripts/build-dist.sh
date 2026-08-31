@@ -16,14 +16,9 @@ mkdir -p "${codex_build}/skills" "${claude_build}/skills"
 for plugin_build in "${codex_build}" "${claude_build}"; do
   cp "${repo_dir}/.mcp.json" "${plugin_build}/.mcp.json"
   cp -R "${repo_dir}/assets" "${plugin_build}/assets"
-  cp -R "${repo_dir}/skills/shared/agix-hello" \
-    "${plugin_build}/skills/agix-hello"
+  cp -R "${repo_dir}/skills/." "${plugin_build}/skills/"
 done
 
-cp -R "${repo_dir}/skills/codex/agix-hello/." \
-  "${codex_build}/skills/agix-hello/"
-cp -R "${repo_dir}/skills/codex/agix-listen" \
-  "${codex_build}/skills/agix-listen"
 cp -R "${repo_dir}/.codex-plugin" "${codex_build}/.codex-plugin"
 
 mkdir -p "${claude_build}/.claude-plugin"
