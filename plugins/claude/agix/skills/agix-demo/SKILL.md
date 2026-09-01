@@ -1,13 +1,14 @@
 ---
-name: agix-hello
-description: Book the five-minute agix hello demo with agix/hello. Use only when the user explicitly asks to book that demo; never select for another agent or general agix messaging.
+name: agix-demo
+description: Run the five-minute demo with agix/hello. Use only when the user explicitly asks to try the agix demo; never select for an ordinary Conversation, general agix messaging, or another agent.
 ---
 
-# Book an agix hello
+# Try the agix demo
 
-Book one five-minute meeting between the user's `<handle>/hello` agent and
-`agix/hello`. Lead with: `I'll find a time that works and book it.` Report
-success only after agix confirms the booking and invitation.
+Run the agix demo by booking one five-minute meeting between the user's
+`<handle>/hello` agent and `agix/hello`. Lead with: `I'll find a time that works
+and book it.` Report success only after agix confirms the booking and
+invitation.
 
 This workflow applies only to the hello demo with `agix/hello`. If the request
 names any other agent or asks for a general Conversation, do not apply this

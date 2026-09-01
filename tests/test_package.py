@@ -8,10 +8,10 @@ CLAUDE_MANIFEST = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
 CLAUDE_MARKETPLACE = json.loads((ROOT / ".claude-plugin/marketplace.json").read_text())
 CODEX_MARKETPLACE = json.loads((ROOT / ".agents/plugins/marketplace.json").read_text())
 MCP = json.loads((ROOT / ".mcp.json").read_text())
-HELLO_PATH = ROOT / "skills/agix-hello/SKILL.md"
+DEMO_PATH = ROOT / "skills/agix-demo/SKILL.md"
 CODEX_PLUGIN_ROOT = ROOT / "plugins/codex/agix"
 CLAUDE_PLUGIN_ROOT = ROOT / "plugins/claude/agix"
-SKILL = HELLO_PATH.read_text()
+SKILL = DEMO_PATH.read_text()
 SKILL_PATHS = sorted((ROOT / "skills").glob("*/SKILL.md"))
 
 
@@ -38,7 +38,7 @@ class PluginPackageTests(unittest.TestCase):
         self.assertEqual(CLAUDE_MANIFEST["description"], MANIFEST["description"])
         self.assertFalse((ROOT / ".claude-plugin/skills").exists())
         self.assertEqual(MCP["mcpServers"]["agix"]["type"], "http")
-        self.assertTrue((CLAUDE_PLUGIN_ROOT / "skills/agix-hello/SKILL.md").is_file())
+        self.assertTrue((CLAUDE_PLUGIN_ROOT / "skills/agix-demo/SKILL.md").is_file())
 
     def test_claude_marketplace_publishes_the_root_plugin(self):
         self.assertEqual(CLAUDE_MARKETPLACE["name"], "agix")
@@ -128,7 +128,7 @@ class PluginPackageTests(unittest.TestCase):
         prompts = MANIFEST["interface"]["defaultPrompt"]
         self.assertEqual(
             prompts,
-            ["Book a five-minute hello with an agix team member."],
+            ["Try the five-minute agix demo."],
         )
         self.assertNotIn("dry-run", SKILL.lower())
         self.assertNotIn("John Pignata", SKILL)
@@ -149,7 +149,8 @@ class PluginPackageTests(unittest.TestCase):
     def test_hello_skill_is_scoped_to_the_demo(self):
         frontmatter = SKILL.split("---", 2)[1]
         self.assertIn("agix/hello", frontmatter)
-        self.assertIn("never select for another agent", frontmatter)
+        self.assertIn("explicitly asks to try the agix demo", frontmatter)
+        self.assertIn("never select for an ordinary Conversation", frontmatter)
         self.assertNotIn("Use to try agix", frontmatter)
         self.assertIn("use the agix MCP tools directly", SKILL)
         self.assertIn("preserve the user's requested participants and content", SKILL)
@@ -161,7 +162,7 @@ class PluginPackageTests(unittest.TestCase):
             ROOT / ".claude-plugin/marketplace.json",
             ROOT / ".agents/plugins/marketplace.json",
             ROOT / "README.md",
-            HELLO_PATH,
+            DEMO_PATH,
             ROOT / "assets/icon.svg",
             ROOT / "assets/logo.svg",
             ROOT / "assets/logo-dark.svg",
@@ -186,18 +187,19 @@ class PluginPackageTests(unittest.TestCase):
         self.assertEqual(MANIFEST["interface"]["longDescription"], description)
 
     def test_skill_uses_the_hello_agent_identity(self):
-        self.assertTrue(SKILL.startswith("---\nname: agix-hello\n"))
+        self.assertTrue(SKILL.startswith("---\nname: agix-demo\n"))
         self.assertIn("`<handle>/hello`", SKILL)
         self.assertIn("`agix/hello`", SKILL)
         self.assertIn("A demo agent to try out agix.", SKILL)
         self.assertNotIn("<handle>/calendar", SKILL)
 
     def test_hello_skill_uses_the_square_agix_icon(self):
-        metadata = (ROOT / "skills/agix-hello/agents/openai.yaml").read_text()
-        self.assertIn('display_name: "Hello"', metadata)
+        metadata = (ROOT / "skills/agix-demo/agents/openai.yaml").read_text()
+        self.assertIn('display_name: "agix demo"', metadata)
+        self.assertIn('default_prompt: "Use $agix-demo to try the five-minute agix demo."', metadata)
         self.assertIn('icon_small: "./assets/agix-icon.png"', metadata)
         self.assertIn('icon_large: "./assets/agix-icon.png"', metadata)
-        self.assertTrue((ROOT / "skills/agix-hello/assets/agix-icon.png").is_file())
+        self.assertTrue((ROOT / "skills/agix-demo/assets/agix-icon.png").is_file())
 
     def test_hello_skill_names_every_required_tool(self):
         for tool in (

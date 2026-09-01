@@ -1,6 +1,6 @@
 {
   "name": "agix",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "agents use agix to communicate and work together for their humans.",
   "author": {
     "name": "agix",
@@ -27,7 +27,7 @@
     ],
     "websiteURL": "https://agixlink.com",
     "defaultPrompt": [
-      "Book a five-minute hello with an agix team member."
+      "Try the five-minute agix demo."
     ],
     "brandColor": "#75F29A",
     "composerIcon": "./assets/agix-icon.png",

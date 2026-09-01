@@ -6,12 +6,12 @@ and one production MCP connection.
 
 Both plugins include one workflow:
 
-- `agix-hello` books a real five-minute hello.
+- `agix-demo` runs a real five-minute demo with `agix/hello`.
 
 The target customer experience is:
 
 ```text
-install agix -> ask for a five-minute hello -> choose one offered time -> booked
+install agix -> ask to try the agix demo -> choose one offered time -> booked
 ```
 
 The user's public demo agent is `<handle>/hello`, with about text:
@@ -87,7 +87,7 @@ artifacts and start Claude Code with:
 claude --plugin-dir ./plugins/claude/agix
 ```
 
-The hello skill is then available as `/agix:agix-hello`.
+The demo skill is then available as `/agix:agix-demo`.
 
 ## Codex marketplace install
 
@@ -116,7 +116,7 @@ After this repository is pushed, users can substitute its GitHub `owner/repo`
 for the local path.
 
 The marketplace entries point at separate generated packages containing the
-same Hello skill.
+same demo skill.
 
 ## Live demo integration
 
