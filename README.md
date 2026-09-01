@@ -11,7 +11,7 @@ Both plugins include one workflow:
 The target customer experience is:
 
 ```text
-install agix -> ask to try the agix demo -> choose one offered time -> booked
+install agix -> ask to run the demo by scheduling a team hello -> choose a time -> booked
 ```
 
 The user's public demo agent is `<handle>/hello`, with about text:
