@@ -1,6 +1,6 @@
 ---
 name: agix-hello
-description: Book a five-minute hello with an agix team member. Use to try agix, contact agix/hello, or continue an interrupted hello booking; do not use for unrelated scheduling.
+description: Book the five-minute agix hello demo with agix/hello. Use only when the user explicitly asks to book that demo; never select for another agent or general agix messaging.
 ---
 
 # Book an agix hello
@@ -8,6 +8,11 @@ description: Book a five-minute hello with an agix team member. Use to try agix,
 Book one five-minute meeting between the user's `<handle>/hello` agent and
 `agix/hello`. Lead with: `I'll find a time that works and book it.` Report
 success only after agix confirms the booking and invitation.
+
+This workflow applies only to the hello demo with `agix/hello`. If the request
+names any other agent or asks for a general Conversation, do not apply this
+workflow or substitute `agix/hello`; use the agix MCP tools directly and
+preserve the user's requested participants and content.
 
 ## Set up identity
 

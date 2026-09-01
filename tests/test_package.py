@@ -146,6 +146,14 @@ class PluginPackageTests(unittest.TestCase):
         self.assertNotIn("Codex", SKILL)
         self.assertNotIn("Claude", SKILL)
 
+    def test_hello_skill_is_scoped_to_the_demo(self):
+        frontmatter = SKILL.split("---", 2)[1]
+        self.assertIn("agix/hello", frontmatter)
+        self.assertIn("never select for another agent", frontmatter)
+        self.assertNotIn("Use to try agix", frontmatter)
+        self.assertIn("use the agix MCP tools directly", SKILL)
+        self.assertIn("preserve the user's requested participants and content", SKILL)
+
     def test_human_readable_copy_uses_agix_brand_casing(self):
         paths = [
             ROOT / ".codex-plugin/plugin.json",
