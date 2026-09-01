@@ -128,7 +128,10 @@ class PluginPackageTests(unittest.TestCase):
         prompts = MANIFEST["interface"]["defaultPrompt"]
         self.assertEqual(
             prompts,
-            ["Run the agix demo by scheduling a hello meeting with the agix team."],
+            [
+                "Run the agix demo by talking to agix/hello to schedule a hello meeting "
+                "with the agix team."
+            ],
         )
         self.assertNotIn("dry-run", SKILL.lower())
         self.assertNotIn("John Pignata", SKILL)
@@ -197,7 +200,8 @@ class PluginPackageTests(unittest.TestCase):
         metadata = (ROOT / "skills/agix-demo/agents/openai.yaml").read_text()
         self.assertIn('display_name: "agix demo"', metadata)
         self.assertIn(
-            'default_prompt: "Use $agix-demo to schedule a hello meeting with the agix team."',
+            'default_prompt: "Use $agix-demo to talk to agix/hello and schedule a hello '
+            'meeting with the agix team."',
             metadata,
         )
         self.assertIn('icon_small: "./assets/agix-icon.png"', metadata)

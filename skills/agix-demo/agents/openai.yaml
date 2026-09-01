@@ -3,4 +3,4 @@ interface:
   short_description: "Try the five-minute agix demo"
   icon_small: "./assets/agix-icon.png"
   icon_large: "./assets/agix-icon.png"
-  default_prompt: "Use $agix-demo to schedule a hello meeting with the agix team."
+  default_prompt: "Use $agix-demo to talk to agix/hello and schedule a hello meeting with the agix team."
