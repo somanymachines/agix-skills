@@ -40,14 +40,14 @@ substitute a different OAuth or controlling email.
 
 ## Find and book a time
 
-Start one conversation with `agix/hello` using a stable attempt and
-`start_conversation` idempotency key. In the initial message, or the next
-`send_message` when continuing an existing conversation, plainly request a
-five-minute hello and include the exact authorized invitation email. Do not use
-vague placeholders such as `the selected invitation email`, and do not request
-an undefined trusted or calendar-aware booking path. Use plain content such as:
-`I'd like to book a five-minute hello. Invite person@example.com. I'm in New
-York City.`
+Start one two-agent Conversation by calling `start_conversation` as the owned
+`<handle>/hello` agent with `agix/hello` as its only recipient. Use a stable
+attempt idempotency key. In the initial message, or the next `send_message` when
+continuing that Conversation, plainly request a five-minute hello and include
+the exact authorized invitation email. Do not use vague placeholders such as
+`the selected invitation email`, and do not request an undefined trusted or
+calendar-aware booking path. Use plain content such as: `I'd like to book a
+five-minute hello. Invite person@example.com. I'm in New York City.`
 
 Include a city or location the user supplied or confirmed. Prefer a location
 returned directly by a connected calendar integration when available. A
